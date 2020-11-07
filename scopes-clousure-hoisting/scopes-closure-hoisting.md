@@ -106,7 +106,7 @@ Let's explain what the hell is happening here.
 
 ## "But Salvatore, this variable = 20 is undeclared in our scope"
 
-You son of ... We talked about scope like a room of a house. The house is the **global object**.
+You son of a... We talked about scope like a room of a house. The house is the **global object**.
 Actually if we wrote something like the code above, js is interpreted like this:
 
 ```js
@@ -124,6 +124,8 @@ window.variable = 10
 the declaration of ``variable = 20`` goes on top of our global scope.
 ``window`` is the global object, in which there are our custom functions (with their local scope).
 
+> **ProTip:** Every variable and function declared inside window object is readable everywhere in the code..
+
 ```js
 window.variable;             //  global scope
 window.variable = 10         //  global scope
@@ -136,6 +138,105 @@ window.variable = 10         //  global scope
 
 In the logs, we'll have 10 and 20.
 
+## Are you ready for the next battle?
+
+3. 
+Let's look at the code:
+```js
+var variable = 10;
+(()=>{
+   variable_3 = 35;
+   console.log(variable_3); 
+   var variable_3 = 45;
+   variable_2 = 15;
+   console.log(variable); 
+})();
+
+console.log(variable_2);
+console.log(variable_3);
+var variable=30;
+```
+
+Guess the logs and go down
+
+This is the result of the intepreter:
+
+```js
+window.variable;
+window.variable_2;
+variable = 10;
+(()=>{
+   var variable_3;
+   variable_3 = 35;
+   console.log(variable_3);
+   variable_3 = 45;
+   variable_2 = 15;
+   console.log(variable); 
+})();
+
+console.log(variable_2); 
+console.log(variable_3); 
+variable=30;
+```
+
+Ahh this is funny. We got a lot of stuffs here.
+Let's analyze the code step by step:
+
+```js
+var variable = 10;
+(()=> {
+  ...magicStuffs
+})
+console.log(variable_2);
+console.log(variable_3);
+var variable=30;
+```
+
+can be wrote like:
+
+```js
+window.variable;      //global
+window.variable = 10  //global
+(()=> {
+  ...magicStuffs      //local
+})
+console.log(variable_2);    //global
+console.log(variable_3);    //global
+window.variable=30;         //global
+```
+
+This happened because of hoisting. At the top of global scope we declare `variable`.
+Now, take a look inside the function, inside local scope:
+
+```js
+(()=> {
+   variable_3 = 35;
+   console.log(variable_3); 
+   var variable_3 = 45;
+   variable_2 = 15;
+   console.log(variable); 
+})
+```
+
+`var variable_3 = 45` is declared on the top of local scope and `variable_2 = 15` goes on the top of
+global scope as `window.variable_2`. Result?:
+
+```js
+(()=> {
+   var variable_3;
+   variable_3 = 35;
+   console.log(variable_3);
+   variable_3 = 45;
+   variable_2 = 15;
+   console.log(variable); 
+})
+```
+
+So inside global scope are declared `variable` and `variable_2` and inside local scope
+is declared `variable_3`.
+The result of the logs is `35` `10` `15` and `ReferenceError`.
+
+Why ReferenceError? simply because as well as we said `variable_3` is declared inside local scope and the father scope (global object) can't access to child scope (function scope).
 
 
 
