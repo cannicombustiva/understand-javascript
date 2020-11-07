@@ -88,7 +88,54 @@ we'll get an `undefined`. But if we write the same lines using LET:
 console.log(jesus)
 let jesus = 10;
 ```
-there is no hoisting so the console.log will say "Oh man what the hell is this "jesus"? and then it will die.
+there is no hoisting so the console.log will say "Oh man what the hell is this "jesus"?" and then it will die.
+
+2. 
+```js
+var variable = 10;
+(()=>{
+   console.log(variable); 
+   variable = 20;
+   console.log(variable);   
+})();
+```
+
+Guess the logs and go down.
+
+Let's explain what the hell is happening here.
+
+## "But Salvatore, this variable = 20 is undeclared in our scope"
+
+You son of ... We talked about scope like a room of a house. The house is the **global object**.
+Actually if we wrote something like the code above, js is interpreted like this:
+
+```js
+window.variable;
+window.variable = 10
+(()=>{
+   console.log(variable);
+   window.variable = 20;
+   console.log(variable);
+})();
+```
+
+``variable = 20`` is declared on this way ``window.variable``.
+``var variable = 10`` and ``variable = 20`` belong to the same ``variable``. For the hoisting, 
+the declaration of ``variable = 20`` goes on top of our global scope.
+``window`` is the global object, in which there are our custom functions (with their local scope).
+
+```js
+window.variable;             //  global scope
+window.variable = 10         //  global scope
+(()=>{
+   console.log(variable);    // local scope
+   window.variable = 20;     // local scope
+   console.log(variable);    // local scope
+})();
+```
+
+In the logs, we'll have 10 and 20.
+
 
 
 
